@@ -1,0 +1,81 @@
+---
+title: "Assignment - Working with HTML and JSON"
+author: "Ciara Bonnett"
+date: "2026-03-12"
+format: html
+editor: visual
+---
+
+## Introduction
+
+For this assignment, I selected three books related to social justice, personal narratives, and systemic history. My goal is to show that the same dataset can be represented in two different file formats and then loaded into R for comparison.
+
+Selected books:
+
+- *The Talk* by Darrin Bell (2024)
+- *Concrete Rose* by Angie Thomas (2021)
+- *Stamped: Racism, Antiracism, and You* by Jason Reynolds and Ibram X. Kendi (2020)
+
+## Approach
+
+My strategy is to manually author the data files to gain a better understanding of their syntax. I will then host these files in a public GitHub repository. In the next phase, I will use the `rvest` package to scrape the HTML table and the `jsonlite` package to parse the JSON objects into R data frames.
+
+## Anticipated Challenges
+
+I anticipate two challenges. The first is that the JSON format uses an array of authors, whereas the HTML table treats authors as a single string. I will need to use `purrr::map_chr()` or `paste()` to collapse the JSON lists into strings so the two data frames can be compared accurately.
+
+The second challenge is that when `rvest` scrapes an HTML table, it often defaults all columns to character type. I will likely need to convert the `Year` column to an integer in both data frames to ensure that `all.equal()` or `identical()` do not fail due to type differences.
+
+## Early Draft Files
+
+### books.html
+
+```html
+<table>
+  <tr>
+    <th>Title</th>
+    <th>Authors</th>
+    <th>Year</th>
+    <th>Publisher</th>
+  </tr>
+  <tr>
+    <td>The Talk</td>
+    <td>Darrin Bell</td>
+    <td>2024</td>
+    <td>Macmillan Audio</td>
+  </tr>
+  <tr>
+    <td>Concrete Rose</td>
+    <td>Angie Thomas</td>
+    <td>2021</td>
+    <td>HarperCollins</td>
+  </tr>
+  <tr>
+    <td>Stamped: Racism, Antiracism, and You</td>
+    <td>Jason Reynolds, Ibram X. Kendi</td>
+    <td>2020</td>
+    <td>Little, Brown Books for Young Readers</td>
+  </tr>
+</table>
+
+[
+  {
+    "Title": "The Talk",
+    "Authors": ["Darrin Bell"],
+    "Year": 2024,
+    "Publisher": "Macmillan Audio"
+  },
+  {
+    "Title": "Concrete Rose",
+    "Authors": ["Angie Thomas"],
+    "Year": 2021,
+    "Publisher": "HarperCollins"
+  },
+  {
+    "Title": "Stamped: Racism, Antiracism, and You",
+    "Authors": ["Jason Reynolds", "Ibram X. Kendi"],
+    "Year": 2020,
+    "Publisher": "Little, Brown Books for Young Readers"
+  }
+]
+

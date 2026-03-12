@@ -1,0 +1,22 @@
+```
+[
+  {
+    "Title": "The Talk",
+    "Authors": ["Darrin Bell"],
+    "Year": 2024,
+    "Publisher": "Macmillan Audio"
+  },
+  {
+    "Title": "Concrete Rose",
+    "Authors": ["Angie Thomas"],
+    "Year": 2021,
+    "Publisher": "HarperCollins"
+  },
+  {
+    "Title": "Stamped: Racism, Antiracism, and You",
+    "Authors": ["Jason Reynolds", "Ibram X. Kendi"],
+    "Year": 2020,
+    "Publisher": "Little, Brown Books for Young Readers"
+  }
+]
+```
