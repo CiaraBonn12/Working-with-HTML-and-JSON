@@ -1,0 +1,121 @@
+---
+title: "Assignment - Working with HTML and JSON"
+author: "Ciara Bonnett"
+date: "2026-03-12"
+format: html
+editor: visual
+---
+
+## Introduction
+
+For this assignment, I selected three books related to social justice, personal narratives, and systemic history. My goal is to show that the same dataset can be represented in two different file formats and then loaded into R for comparison.
+
+Selected books:
+
+-   *The Talk* by Darrin Bell (2024)
+-   *Concrete Rose* by Angie Thomas (2021)
+-   *Stamped: Racism, Antiracism, and You* by Jason Reynolds and Ibram X. Kendi (2020)
+
+## Approach
+
+My strategy is to manually author the data files to gain a better understanding of their syntax. I will then host these files in a public GitHub repository. In the next phase, I will use the `rvest` package to scrape the HTML table and the `jsonlite` package to parse the JSON objects into R data frames.
+
+## Anticipated Challenges
+
+I anticipate two challenges. The first is that the JSON format uses an array of authors, whereas the HTML table treats authors as a single string. I will need to use `purrr::map_chr()` or `paste()` to collapse the JSON lists into strings so the two data frames can be compared accurately.
+
+The second challenge is that when `rvest` scrapes an HTML table, it often defaults all columns to character type. I will likely need to convert the `Year` column to an integer in both data frames to ensure that `all.equal()` or `identical()` do not fail due to type differences.
+
+## Early Draft Files
+
+### books.html
+
++--------------------------------------+--------------------------------+------+---------------------------------------+
+| Title                                | Authors                        | Year | Publisher                             |
++======================================+================================+======+=======================================+
+| The Talk                             | Darrin Bell                    | 2024 | Macmillan Audio                       |
++--------------------------------------+--------------------------------+------+---------------------------------------+
+| Concrete Rose                        | Angie Thomas                   | 2021 | HarperCollins                         |
++--------------------------------------+--------------------------------+------+---------------------------------------+
+| Stamped: Racism, Antiracism, and You | Jason Reynolds, Ibram X. Kendi | 2020 | Little, Brown Books for Young Readers |
++--------------------------------------+--------------------------------+------+---------------------------------------+
+
+\[ { "Title": "The Talk", "Authors": \["Darrin Bell"\], "Year": 2024, "Publisher": "Macmillan Audio" }, { "Title": "Concrete Rose", "Authors": \["Angie Thomas"\], "Year": 2021, "Publisher": "HarperCollins" }, { "Title": "Stamped: Racism, Antiracism, and You", "Authors": \["Jason Reynolds", "Ibram X. Kendi"\], "Year": 2020, "Publisher": "Little, Brown Books for Young Readers" }\] \## Code deliverable
+
+```{r}
+#| message: false
+#| warning: false
+
+library(rvest)
+library(jsonlite)
+library(dplyr)
+library(purrr)
+library(knitr)
+
+# THE URLS BELOW MUST NOT HAVE BRACKETS [] OR PARENTHESES ()
+html_url <- "https://raw.githubusercontent.com/CiaraBonn12/Working-with-HTML-and-JSON/main/books.html"
+json_url <- "https://raw.githubusercontent.com/CiaraBonn12/Working-with-HTML-and-JSON/main/books.json"
+
+
+
+
+# 1. Load HTML Table
+html_df <- read_html(html_url) %>%
+  html_node("table") %>%
+  html_table()
+
+# 2. Load JSON Data
+json_df <- fromJSON(json_url)
+
+# 3. Data Cleaning for Comparison
+json_df_cleaned <- json_df %>%
+  mutate(
+    Authors = map_chr(Authors, ~ paste(.x, collapse = ", ")),
+    Year = as.integer(Year)
+  )
+
+html_df_cleaned <- html_df %>%
+  mutate(Year = as.integer(Year))
+
+# 4. Results
+kable(html_df_cleaned, caption = "Data Frame from HTML Source")
+kable(json_df_cleaned, caption = "Data Frame from JSON Source")
+
+# Check if identical
+identical_check <- identical(html_df_cleaned, json_df_cleaned)
+identical_check
+
+
+```
+
+##Conclusion
+Both files contain the same book data, but the structure differs between HTML and JSON. After converting the author lists and standardizing the year column, the two data frames can be compared directly in R to determine whether they are identical.
+
+## AI TRANSCRIPT
+
+OpenAI ChatGPT
+
+### Purpose
+I used ChatGPT to help troubleshoot Quarto/R formatting issues, clean up the wording of my approach section, and identify why my JSON and HTML files were not loading correctly in R.
+
+### Prompt 1
+"I am working on a Quarto assignment using books.html and books.json. RStudio gives me an error when I try to load the files. Can you help me figure out what is wrong?"
+
+### Response Summary
+The response explained that my GitHub links were formatted as Markdown links instead of raw URLs, and that my JSON file likely contained Markdown code fences instead of raw JSON.
+
+### How I Used It
+I updated my URLs to use raw GitHub links and cleaned the contents of `books.json` and `books.html` so they contained only raw file content.
+
+### Prompt 2
+"Can you help me rewrite my assignment approach so it sounds clearer and more polished?"
+
+### Response Summary
+The response suggested revisions for grammar, organization, and clarity while keeping my original ideas.
+
+### How I Used It
+I revised the wording of my introduction, approach, and anticipated challenges sections, but kept the project topic, book choices, and technical plan as my own.
+
+## Citation
+
+OpenAI. (2026). *ChatGPT* (GPT-5). [https://chat.openai.com/](https://chat.openai.com/)
